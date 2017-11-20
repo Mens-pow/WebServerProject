@@ -1,0 +1,77 @@
+﻿<html>
+<head>
+    <meta charset="UTF-8"/>
+    <title>L4.1: Jetty WebSocket Chat</title>
+    <script type="text/javascript">
+        var ws;
+
+        function init() {
+            ws = new WebSocket("ws://localhost:8080/chat");
+            ws.onopen = function (event) {
+
+            }
+            ws.onmessage = function (event) {
+                var $textarea = document.getElementById("messages");
+                $textarea.value = $textarea.value + event.data + "\n";
+            }
+            ws.onclose = function (event) {
+
+            }
+        };
+
+
+          function sendLocation() {
+
+              navigator.geolocation.getCurrentPosition(function (position) {
+
+                  // Текущие координаты.
+                  var lat = position.coords.latitude;
+                  var lng = position.coords.longitude;
+                  var message = lat + ":" + lng;
+                  ws.send(message);
+              });
+          };
+
+
+        function sendMessage() {
+            var messageField = document.getElementById("message");
+            var userNameField = document.getElementById("username");
+            var message = userNameField.value + ":" + messageField.value;
+            ws.send(message);
+            messageField.value = '';
+        }
+
+    </script>
+</head>
+<body onload="init();">
+<div id="body">
+    <div id="menu">
+        <p class="welcome">
+            Welcome, <input id="username" value="anonymous"/>
+        </p>
+
+        <div style="clear: both"></div>
+    </div>
+
+    <div id="chatbox">
+        <textarea id="messages" rows="20" cols="50" readonly="readonly"></textarea>
+    </div>
+
+    <form name="message" action="">
+        <input name="usermsg" type="text" id="message" size="40"/>
+        <input type="button" name="submitmsg" value="Send..." onclick="sendLocation();"/>
+    </form>
+</div>
+<form action="/signup" method="POST">
+    Login: <input type="text" name="login"/>
+    Password: <input type="password" name="password"/>
+    <input type="submit" value="Sign in">
+</form>
+
+<form  action="/signin" method="POST">
+    Login: <input type="text" name="login"/>
+    Password: <input type="password" name="password"/>
+    <input type="button" value="Sign in" onClick="sendLocation()">
+</form>
+</body>
+</html>
